@@ -137,25 +137,25 @@ function App() {
 
     switch (selectedGate) {
       case "AND":
-        result = input1 && input2;
-        break;
+      result = input1 && input2 ? "1" : "0";
+      break;
       case "OR":
-        result = input1 || input2;
-        break;
+      result = input1 || input2 ? "1" : "0";
+      break;
       case "XOR":
-        result = input1 !== input2;
-        break;
+      result = input1 !== input2 ? "1" : "0";
+      break;
       case "NAND":
-        result = !(input1 && input2);
-        break;
+      result = !(input1 && input2) ? "1" : "0";
+      break;
       case "NOR":
-        result = !(input1 || input2);
-        break;
+      result = !(input1 || input2) ? "1" : "0";
+      break;
       case "XNOR":
-        result = input1 === input2;
-        break;
+      result = input1 === input2 ? "1" : "0";
+      break;
       default:
-        result = false;
+      result = "0";
     }
 
     setLogicResult(result);
@@ -324,7 +324,6 @@ function App() {
               </Heading>
               {outputDevice ? (
                 <>
-                  // And for output device:
                   <BLEDeviceManager
                     device={outputDevice}
                     serviceUUIDs={[ESP_SERVICE_UUID_OUTPUT]}
