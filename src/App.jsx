@@ -98,7 +98,7 @@ function App() {
 
       const te = new TextEncoder();
 
-      outputChar.writeValue(te.encode(result ? 1 : 0));
+      outputChar.writeValue(te.encode(result == "1" ? 1 : 0));
     },
     [serviceData]
   );
@@ -118,7 +118,7 @@ function App() {
     console.log("Testing send output");
     console.log(connectedOutputDevice);
     console.log(serviceData);
-    const logicResult = "1";
+    const logicResult = "0";
     if (
       connectedOutputDevice &&
       serviceData[ESP_SERVICE_UUID_OUTPUT]?.[OUTPUT_CONTROL_CHAR_UUID]
@@ -137,25 +137,25 @@ function App() {
 
     switch (selectedGate) {
       case "AND":
-      result = input1 && input2 ? "1" : "0";
-      break;
+        result = input1 && input2 ? "1" : "0";
+        break;
       case "OR":
-      result = input1 || input2 ? "1" : "0";
-      break;
+        result = input1 || input2 ? "1" : "0";
+        break;
       case "XOR":
-      result = input1 !== input2 ? "1" : "0";
-      break;
+        result = input1 !== input2 ? "1" : "0";
+        break;
       case "NAND":
-      result = !(input1 && input2) ? "1" : "0";
-      break;
+        result = !(input1 && input2) ? "1" : "0";
+        break;
       case "NOR":
-      result = !(input1 || input2) ? "1" : "0";
-      break;
+        result = !(input1 || input2) ? "1" : "0";
+        break;
       case "XNOR":
-      result = input1 === input2 ? "1" : "0";
-      break;
+        result = input1 === input2 ? "1" : "0";
+        break;
       default:
-      result = "0";
+        result = "0";
     }
 
     setLogicResult(result);
