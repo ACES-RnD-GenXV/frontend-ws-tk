@@ -81,16 +81,26 @@ function App() {
 
       // Create a buffer with the output data
       // Format: [result (1 byte), buzzer_active (1 byte), frequency (2 bytes)]
-      const buffer = new ArrayBuffer(4);
-      const view = new DataView(buffer);
+      // const buffer = new ArrayBuffer(4);
+      // const view = new DataView(buffer);
 
-      view.setUint8(0, result ? 1 : 0);
-      view.setUint8(1, isBuzzerActive ? 1 : 0);
-      view.setUint16(2, buzzerFrequency, true); // true for little-endian
+      // view.setUint8(0, result ? 1 : 0);
+      // view.setUint8(1, isBuzzerActive ? 1 : 0);
+      // view.setUint16(2, buzzerFrequency, true); // true for little-endian
 
-      outputChar.writeValue(buffer);
+      // console.log("Sending output to ESP:", {
+      //   result,
+      //   isBuzzerActive,
+      //   buzzerFrequency,
+      // });
+      // console.log("Buffer to send:", buffer);
+      // console.log("Buffer view:", view);
+
+      const te = new TextEncoder();
+
+      outputChar.writeValue(te.encode(result ? 1 : 0));
     },
-    [serviceData, isBuzzerActive, buzzerFrequency]
+    [serviceData]
   );
 
   // useEffect(() => {
@@ -113,7 +123,7 @@ function App() {
       connectedOutputDevice &&
       serviceData[ESP_SERVICE_UUID_OUTPUT]?.[OUTPUT_CONTROL_CHAR_UUID]
     ) {
-      console.log("Sending test output to ESP");
+      console.log("Sending test output to ESP ", logicResult);
       sendOutputToESP(logicResult);
     }
   };
@@ -287,9 +297,13 @@ function App() {
                   serviceUUIDs={[ESP_SERVICE_UUID_INPUT]}
                   onConnected={(device) => {
                     setConnectedInputDevice(device);
-                    setupSensorNotifications();
                   }}
                   onDisconnected={() => setConnectedInputDevice(null)}
+                  onServicesDiscovered={(services) => {
+                    setServiceData((prev) => ({ ...prev, ...services }));
+                    // After services are discovered, set up notifications
+                    setupSensorNotifications();
+                  }}
                 />
               ) : (
                 <Button
@@ -310,17 +324,20 @@ function App() {
               </Heading>
               {outputDevice ? (
                 <>
+                  // And for output device:
                   <BLEDeviceManager
                     device={outputDevice}
                     serviceUUIDs={[ESP_SERVICE_UUID_OUTPUT]}
                     onConnected={(device) => {
-                      console.log("Connected to output device:", device);
                       setConnectedOutputDevice(device);
-                      sendOutputToESP(logicResult);
                     }}
                     onDisconnected={() => {
                       setConnectedOutputDevice(null);
-                      console.log("Disconnected from output device");
+                    }}
+                    onServicesDiscovered={(services) => {
+                      setServiceData((prev) => ({ ...prev, ...services }));
+                      // After services are discovered, send output state
+                      sendOutputToESP(logicResult);
                     }}
                   />
                   <Button onClick={testSendOutput} colorScheme="teal">

@@ -17,6 +17,7 @@ const BLEDeviceManager = ({
   serviceUUIDs = [],
   onConnected,
   onDisconnected,
+  onServicesDiscovered,
 }) => {
   const toast = useToast();
   const [isConnecting, setIsConnecting] = useState(false);
@@ -41,6 +42,13 @@ const BLEDeviceManager = ({
       const result = await connectToDevice(device);
       if (result) {
         console.log("Connected to device:", device);
+
+        // Pass discovered services back to parent component
+        if (result.services && onServicesDiscovered) {
+          console.log("Services discovered:", result.services);
+          onServicesDiscovered(result.services);
+        }
+
         toast({
           title: "Connected",
           description: `Connected to ${device.name || "device"}`,
