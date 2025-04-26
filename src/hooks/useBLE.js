@@ -32,7 +32,7 @@ export const useBLE = ({ services = [] } = {}) => {
     try {
       setIsScanning(true);
 
-      console.log(services);
+      // console.log(services);
 
       const requestOptions =
         services.length > 0
@@ -48,7 +48,7 @@ export const useBLE = ({ services = [] } = {}) => {
       });
 
       setIsScanning(false);
-      console.log(services);
+      // console.log(services);
 
       return device;
     } catch (err) {

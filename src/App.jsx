@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import {
-  ChakraProvider,
-  Container,
   Stack,
   Heading,
   Box,
@@ -17,6 +15,7 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Image,
 } from "@chakra-ui/react";
 import {
   DeviceDetailsCard,
@@ -29,9 +28,8 @@ import {
 
 // ESP32 BLE UUIDs
 const ESP_SERVICE_UUID_INPUT = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
-const SENSOR_A_CHAR_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
-const SENSOR_B_CHAR_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a9";
-const INPUT_CONTROL_CHAR_UUID_INPUT = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+const SENSOR_A_CHAR_UUID = "68a44f5d-5d78-4d08-86a8-4f8abf8e4c4b";
+const SENSOR_B_CHAR_UUID = "094f0fce-dfff-4c6f-875c-c86e4aaff2cb";
 const ESP_SERVICE_UUID_OUTPUT = "4869e6e5-dec6-4a9d-a0a4-eda6b5448b97";
 const OUTPUT_CONTROL_CHAR_UUID = "05c4d03a-ac78-4627-8778-f23fab166ba8";
 
@@ -52,8 +50,8 @@ function App() {
   const [logicResult, setLogicResult] = useState(false);
 
   // Threshold values
-  const [sensor1Threshold, setSensor1Threshold] = useState(30);
-  const [sensor2Threshold, setSensor2Threshold] = useState(30);
+  const [sensor1Threshold, setSensor1Threshold] = useState(15);
+  const [sensor2Threshold, setSensor2Threshold] = useState(15);
 
   // Device Types
   const [connectingDeviceType, setConnectingDeviceType] = useState(null); // 'input' or 'output'
@@ -79,23 +77,6 @@ function App() {
       const outputChar =
         serviceData[ESP_SERVICE_UUID_OUTPUT][OUTPUT_CONTROL_CHAR_UUID];
 
-      // Create a buffer with the output data
-      // Format: [result (1 byte), buzzer_active (1 byte), frequency (2 bytes)]
-      // const buffer = new ArrayBuffer(4);
-      // const view = new DataView(buffer);
-
-      // view.setUint8(0, result ? 1 : 0);
-      // view.setUint8(1, isBuzzerActive ? 1 : 0);
-      // view.setUint16(2, buzzerFrequency, true); // true for little-endian
-
-      // console.log("Sending output to ESP:", {
-      //   result,
-      //   isBuzzerActive,
-      //   buzzerFrequency,
-      // });
-      // console.log("Buffer to send:", buffer);
-      // console.log("Buffer view:", view);
-
       const te = new TextEncoder();
 
       outputChar.writeValue(te.encode(result == "1" ? 1 : 0));
@@ -103,27 +84,13 @@ function App() {
     [serviceData]
   );
 
-  // useEffect(() => {
-  //   const result = "1";
-  //   if (
-  //     connectedOutputDevice &&
-  //     serviceData[ESP_SERVICE_UUID_OUTPUT]?.[OUTPUT_CONTROL_CHAR_UUID]
-  //   ) {
-  //     console.log("Sending output to ESP:", result);
-  //     sendOutputToESP(result);
-  //   }
-  // }, [connectedOutputDevice, serviceData, sendOutputToESP]);
-
   const testSendOutput = () => {
-    console.log("Testing send output");
-    console.log(connectedOutputDevice);
-    console.log(serviceData);
     const logicResult = "0";
     if (
       connectedOutputDevice &&
       serviceData[ESP_SERVICE_UUID_OUTPUT]?.[OUTPUT_CONTROL_CHAR_UUID]
     ) {
-      console.log("Sending test output to ESP ", logicResult);
+      // console.log("Sending test output to ESP ", logicResult);
       sendOutputToESP(logicResult);
     }
   };
@@ -274,6 +241,15 @@ function App() {
 
   return (
     <Stack maxW="100vw" py={8} px={4} spacing={8} align="center">
+      <Stack direction={"row"}>
+        <Image src="/umn.png" alt="Logo" boxSize="50px" objectFit="contain" />
+        <Image
+          src="/LogoACES.png"
+          alt="Logo"
+          boxSize="50px"
+          objectFit="contain"
+        />
+      </Stack>
       <VStack spacing={6} align="stretch">
         <Box textAlign="center" mb={8}>
           <Heading as="h1" size="xl">
@@ -372,7 +348,7 @@ function App() {
           {/* Logic Gate */}
           <LogicGateSelector
             selectedGate={selectedGate}
-            onGateChange={setSelectedGate}
+            onGateSelected={setSelectedGate}
             input1={sensor1Value <= sensor1Threshold}
             input2={sensor2Value <= sensor2Threshold}
             result={logicResult}
@@ -390,7 +366,7 @@ function App() {
 
         {/* Output display */}
         <OutputDisplay
-          result={logicResult}
+          result={logicResult === "1"}
           buzzerFrequency={buzzerFrequency}
           onBuzzerFrequencyChange={handleBuzzerFrequencyChange}
           isBuzzerActive={isBuzzerActive}
@@ -440,28 +416,6 @@ function App() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {/* <Modal isOpen={isDeviceModalOpen} onClose={onDeviceModalClose} size="xl">
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Connect BLE Device</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <BLEDeviceScanner
-              onDeviceSelected={(device) => {
-                if (!inputDevice) {
-                  setInputDevice(device);
-                } else if (!outputDevice) {
-                  setOutputDevice(device);
-                }
-                onDeviceModalClose();
-              }}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={onDeviceModalClose}>Cancel</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal> */}
 
       {/* Settings modal */}
       <Modal isOpen={isSettingsModalOpen} onClose={onSettingsModalClose}>

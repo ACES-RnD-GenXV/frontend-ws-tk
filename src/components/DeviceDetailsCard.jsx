@@ -16,8 +16,8 @@ import {
 const DeviceDetailsCard = ({ device, serviceData = {} }) => {
   if (!device) return null;
 
-  console.log("Device:", device);
-  console.log("Device GATT Connected:", device.gatt.connected);
+  // console.log("Device:", device);
+  // console.log("Device GATT Connected:", device.gatt.connected);
 
   return (
     <Box

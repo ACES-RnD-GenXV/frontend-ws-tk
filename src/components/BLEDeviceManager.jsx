@@ -26,12 +26,12 @@ const BLEDeviceManager = ({
   });
 
   useEffect(() => {
-    console.log("Connected to device:", connectedDevice);
+    // console.log("Connected to device:", connectedDevice);
 
     if (connectedDevice) {
       onConnected(connectedDevice);
     } else {
-      console.log("Disconnected dari dalam from device.");
+      // console.log("Disconnected dari dalam from device.");
       onDisconnected && onDisconnected();
     }
   }, [connectedDevice, onConnected, onDisconnected]);
@@ -41,11 +41,11 @@ const BLEDeviceManager = ({
     try {
       const result = await connectToDevice(device);
       if (result) {
-        console.log("Connected to device:", device);
+        // console.log("Connected to device:", device);
 
         // Pass discovered services back to parent component
         if (result.services && onServicesDiscovered) {
-          console.log("Services discovered:", result.services);
+          // console.log("Services discovered:", result.services);
           onServicesDiscovered(result.services);
         }
 
